@@ -3,23 +3,8 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtCore
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-import sys
-
-
-StyleSheet = '''
-#bar{
-    border: 1px solid grey;
-    min-height: 12px;
-    max-height: 12px;
-    border-radius: 6px;
-}
-#bar::chunk{
-    border-radius: 6px;
-    background-color: #05B8CC;
-}
-'''
-
-
+from lib import *
+import handle_event
 
 class ImageProcessing(QWidget):
 
@@ -30,7 +15,11 @@ class ImageProcessing(QWidget):
         self.height = self.screenRect.height() - 150
         self.width = self.screenRect.width() - 50
 
-        self.title = 'PyQt5 image '
+        sshFile="style.qss"
+        with open(sshFile,"r") as fh:
+            self.setStyleSheet(fh.read())
+
+        self.title = 'Image processing'
         self.left = 20
         self.top = 40
         self.initUI()
@@ -44,7 +33,7 @@ class ImageProcessing(QWidget):
         # button open img
         btnOpenImg = QPushButton(self)
         btnOpenImg.setToolTip("Open Image")
-        btnOpenImg.clicked.connect(self.getImage)
+        btnOpenImg.clicked.connect(handle_event.open_image)
         btnOpenImg.setIcon(QIcon("icon_OpenImg.png"))
         btnOpenImg.setIconSize(QSize(25,25))
 
@@ -69,24 +58,16 @@ class ImageProcessing(QWidget):
 
         ################################ Img ##########################################
         # img before
-        self.lblImgBefore = QLabel("BEFORE",self)
+        self.lblImgBefore = QLabel("Open image to start",self)
         self.lblImgBefore.setToolTip("Image Before")
         self.lblImgBefore.resize(self.width / 3, self.height)
-        pixmapImgBefore = QPixmap('bg-66.jpg')
-        if (pixmapImgBefore.width() > self.lblImgBefore.width()):
-            pixmapImgBefore = pixmapImgBefore.scaledToWidth(self.lblImgBefore.width())
-        self.lblImgBefore.setPixmap(pixmapImgBefore)
         self.lblImgBefore.setAlignment(QtCore.Qt.AlignCenter)
 
         #img after
-        self.lblImgAfter = QLabel(self)
+        self.lblImgAfter = QLabel("Open image to start", self)
         self.lblImgAfter.setToolTip("Image After")
         # self.lblImgAfter.setGeometry(self.lblImgBefore.width(), 0, self.lblImgBefore.width(), self.height)
         self.lblImgAfter.resize(self.width / 3, self.height)
-        pixmapImgAfter = QPixmap('Capture.PNG')
-        if (pixmapImgAfter.width() > self.lblImgAfter.width()):
-            pixmapImgAfter = pixmapImgAfter.scaledToWidth(self.lblImgBefore.width())
-        self.lblImgAfter.setPixmap(pixmapImgAfter)
         self.lblImgAfter.setAlignment(QtCore.Qt.AlignCenter)
 
         #line vertical
@@ -96,34 +77,33 @@ class ImageProcessing(QWidget):
 
 
         #img histogram
-        lblHistogram = QLabel(self)
-        lblHistogram.resize(200,100)
-        pixmapImg = QPixmap('bg-66.jpg')
-        if (pixmapImg.width() > lblHistogram.width()):
-            pixmapImg = pixmapImg.scaledToHeight(lblHistogram.width())
-        lblHistogram.setPixmap(pixmapImg)
-        lblHistogram.setAlignment(QtCore.Qt.AlignCenter)
+        self.lblHistogram = QLabel(self)
+        self.lblHistogram.resize(200,100)
+        self.lblHistogram.setAlignment(QtCore.Qt.AlignCenter)
 
         #đảo ảnh
         lblDaoAnh =QLabel("Âm bản",self)
         btnDaoAnh = QPushButton("OK", self)
+        btnDaoAnh.setObjectName("btnAutoFunction")
         btnDaoAnh.clicked.connect(self.daoAnh)
         hboxDaoAnh = QHBoxLayout()
         hboxDaoAnh.addWidget(lblDaoAnh,5)
         hboxDaoAnh.addWidget(btnDaoAnh,5)
         hboxDaoAnh.addStretch(4)
 
-    ################################## AI ######################################
+        ################################## AI ######################################
 
-        lblSubject = QLabel("Phương Đẹp trai", self)
+        lblSubject = QLabel("", self)
 
         btnDeleteBackground = QPushButton("Xóa Phông", self)
+        btnDeleteBackground.setObjectName("btnAutoFunction")
         btnDeleteBackground.clicked.connect(self.deleteBackground)
 
         btnAutoEdit = QPushButton("Auto")
+        btnAutoEdit.setObjectName("btnAutoFunction")
         btnAutoEdit.clicked.connect(self.autoEdit)
 
-    ################################ Slider #####################################
+        ################################ Slider #####################################
 
         #slider tăng chỉnh garma #####################
         vboxGarma = QVBoxLayout()
@@ -131,10 +111,11 @@ class ImageProcessing(QWidget):
         sldGarma = QSlider(Qt.Horizontal, self)
         sldGarma.setRange(0, 100)
         sldGarma.setFocusPolicy(Qt.NoFocus)
-        sldGarma.setPageStep(5)
-        sldGarma.valueChanged.connect(self.garma)
+        sldGarma.setValue(50)
+        sldGarma.valueChanged.connect(handle_event.contrast)
 
         lblTextGarma = QLabel('Tăng chỉnh độ sáng', self)
+        lblTextGarma.setObjectName("lblSliderName")
 
         vboxGarma.addWidget(lblTextGarma)
         vboxGarma.addWidget(sldGarma)
@@ -148,9 +129,10 @@ class ImageProcessing(QWidget):
         sldSmoothing.setFocusPolicy(Qt.NoFocus)
         sldSmoothing.setPageStep(5)
 
-        sldSmoothing.valueChanged.connect(self.smoothing)
+        sldSmoothing.valueChanged.connect(handle_event.smoothing)
 
         lblTextSmoothing = QLabel('Làm mịn', self)
+        lblTextSmoothing.setObjectName("lblSliderName")
 
         vboxSmoothing.addWidget(lblTextSmoothing)
         vboxSmoothing.addWidget(sldSmoothing)
@@ -164,9 +146,10 @@ class ImageProcessing(QWidget):
         sldSharpen.setFocusPolicy(Qt.NoFocus)
         sldSharpen.setPageStep(5)
 
-        sldSharpen.valueChanged.connect(self.sharpen)
+        sldSharpen.valueChanged.connect(handle_event.sharpening)
 
         lblTextSharpen = QLabel('Làm sắc nét', self)
+        lblTextSharpen.setObjectName("lblSliderName")
 
         vboxSharpen.addWidget(lblTextSharpen)
         vboxSharpen.addWidget(sldSharpen)
@@ -183,56 +166,14 @@ class ImageProcessing(QWidget):
         sldReduceNoise.valueChanged.connect(self.reduceNoise)
 
         lblTextReduceNoise = QLabel('Giảm nhiễu', self)
+        lblTextReduceNoise.setObjectName("lblSliderName")
 
         vboxReduceNoise.addWidget(lblTextReduceNoise)
         vboxReduceNoise.addWidget(sldReduceNoise)
 
-    ################################## set style ###########################################
+        ################################## set style ###########################################
         self.lblImgBefore.setStyleSheet("background-color: #282828;  ")
-                                   # "margin-top: 80px;"
-                                   # "margin-bottom: 150px;"
-                                   # "margin-left: 50px;"
-                                   # "margin-right: 0px;"
-        ################################ Top tool ############################
-
-        btnOpenImg.setStyleSheet(
-            "border-radius : 5; border : 1px solid #c1c1c1; background-color: #535353; color: #c1c1c1; font-weight: bold;"
-            "min-height: 40px;"
-            "max-height: 40px;"
-            "min-width: 40px;"
-            "max-width: 40px;"
-        )
-
-        btnUndo.setStyleSheet(
-            "border-radius : 5; border : 1px solid #c1c1c1; background-color: #535353; color: #c1c1c1; font-weight: bold;"
-            "min-height: 40px;"
-            "max-height: 40px;"
-            "min-width: 40px;"
-            "max-width: 40px;"
-        )
-
-        btnRedo.setStyleSheet(
-            "border-radius : 5; border : 1px solid #c1c1c1; background-color: #535353; color: #c1c1c1; font-weight: bold;"
-            "min-height: 40px;"
-            "max-height: 40px;"
-            "min-width: 40px;"
-            "max-width: 40px;"
-        )
-
-        btnSave.setStyleSheet(
-            "border-radius : 5; border : 1px solid #c1c1c1; background-color: #535353; color: #c1c1c1; font-weight: bold;"
-            "min-height: 40px;"
-            "max-height: 40px;"
-            "min-width: 40px;"
-            "max-width: 40px;"
-        )
-        ################################# img ###################################
-
         self.lblImgAfter.setStyleSheet("background-color: #282828; ")
-                                  # "margin-top: 80px;"
-                                  # "margin-bottom: 150px;"
-                                  # "margin-left: 50px;"
-                                  # "margin-right: 0px;"
 
         lineVertical.setStyleSheet("border-right : 1px solid black;")
         lineVertical.setGeometry(self.lblImgAfter.width() + self.lblImgBefore.width() + 20, 0, 1, self.height)
@@ -240,144 +181,17 @@ class ImageProcessing(QWidget):
         lineHorizone.setStyleSheet("border-top : 1px solid black;")
         lineHorizone.setGeometry(self.lblImgAfter.width() + self.lblImgBefore.width() + 20, self.height / 4, self.width / 5, 1)
 
-        lblHistogram.setStyleSheet("background-color: #282828; ")
+        self.lblHistogram.setStyleSheet("background-color: #282828; ")
 
         ########################### Ai ############################
 
         lblSubject.setStyleSheet("color: #c1c1c1; font-weight: bold;margin-left: 10px")
 
-        btnDeleteBackground.setStyleSheet(
-            "border-radius : 10; border : 1px solid #c1c1c1; background-color: #535353; color: #c1c1c1; font-weight: bold;"
-            "min-height: 40px;"
-            "max-height: 40px;")
-
-        btnAutoEdit.setStyleSheet(
-            "border-radius : 10; border : 1px solid #c1c1c1; background-color: #535353; color: #c1c1c1; font-weight: bold;"
-            "min-height: 40px;"
-            "max-height: 40px;")
-
 
         ######## Đảo ảnh ################
         lblDaoAnh.setStyleSheet("color: #c1c1c1; font-weight: bold; margin-left: 10px")
 
-        btnDaoAnh.setStyleSheet(
-            "border-radius : 7; border : 1px solid #c1c1c1; background-color: #535353; color: #c1c1c1; font-weight: bold;"
-            "min-height: 30px;"
-            "max-height: 30px;")
-
-        ######## Garma ################
-        sldGarma.setStyleSheet("QSlider::groove:horizontal {\n"
-                          "    border-radius: 9px;\n"
-                          "    height: 18px;\n"
-                          "	margin: 10px;\n"
-                          "	background-color: rgb(52, 59, 72);\n"
-                          "}\n"
-                          "QSlider::groove:horizontal:hover {\n"
-                          "	background-color: rgb(55, 62, 76);\n"
-                          "}\n"
-                          "QSlider::handle:horizontal {\n"
-                          "    background-color: rgb(85, 170, 255);\n"
-                          "    border: none;\n"
-                          "    height: 18px;\n"
-                          "    width: 18px;\n"
-                          "    margin: 0px;\n"
-                          "	border-radius: 9px;\n"
-                          "}\n"
-                          "QSlider::handle:horizontal:hover {\n"
-                          "    background-color: rgb(105, 180, 255);\n"
-                          "}\n"
-                          "QSlider::handle:horizontal:pressed {\n"
-                          "    background-color: rgb(65, 130, 195);\n"
-                          "}\n"
-                          "\n")
-        lblTextGarma.setStyleSheet("color: #c1c1c1; font-weight: bold;margin-left: 10px")
-
-        ############## Sharpen ##########################3
-        sldSharpen.setStyleSheet("QSlider::groove:horizontal {\n"
-                               "    border-radius: 9px;\n"
-                               "    height: 18px;\n"
-                               "	margin: 10px;\n"
-                               "	background-color: rgb(52, 59, 72);\n"
-                               "}\n"
-                               "QSlider::groove:horizontal:hover {\n"
-                               "	background-color: rgb(55, 62, 76);\n"
-                               "}\n"
-                               "QSlider::handle:horizontal {\n"
-                               "    background-color: rgb(85, 170, 255);\n"
-                               "    border: none;\n"
-                               "    height: 18px;\n"
-                               "    width: 18px;\n"
-                               "    margin: 0px;\n"
-                               "	border-radius: 9px;\n"
-                               "}\n"
-                               "QSlider::handle:horizontal:hover {\n"
-                               "    background-color: rgb(105, 180, 255);\n"
-                               "}\n"
-                               "QSlider::handle:horizontal:pressed {\n"
-                               "    background-color: rgb(65, 130, 195);\n"
-                               "}\n"
-                               "\n")
-        lblTextSharpen.setStyleSheet("color: #c1c1c1; font-weight: bold;margin-left: 10px")
-
-        ############## Smoothing ##########################3
-        sldSmoothing.setStyleSheet("QSlider::groove:horizontal {\n"
-                                   "    border-radius: 9px;\n"
-                                   "    height: 18px;\n"
-                                   "	margin: 10px;\n"
-                                   "	background-color: rgb(52, 59, 72);\n"
-                                   "}\n"
-                                   "QSlider::groove:horizontal:hover {\n"
-                                   "	background-color: rgb(55, 62, 76);\n"
-                                   "}\n"
-                                   "QSlider::handle:horizontal {\n"
-                                   "    background-color: rgb(85, 170, 255);\n"
-                                   "    border: none;\n"
-                                   "    height: 18px;\n"
-                                   "    width: 18px;\n"
-                                   "    margin: 0px;\n"
-                                   "	border-radius: 9px;\n"
-                                   "}\n"
-                                   "QSlider::handle:horizontal:hover {\n"
-                                   "    background-color: rgb(105, 180, 255);\n"
-                                   "}\n"
-                                   "QSlider::handle:horizontal:pressed {\n"
-                                   "    background-color: rgb(65, 130, 195);\n"
-                                   "}\n"
-                                   "\n")
-        lblTextSmoothing.setStyleSheet("color: #c1c1c1; font-weight: bold;margin-left: 10px")
-
-        ############## ReduceNoise ##########################3
-        sldReduceNoise.setStyleSheet("QSlider::groove:horizontal {\n"
-                                   "    border-radius: 9px;\n"
-                                   "    height: 18px;\n"
-                                   "	margin: 10px;\n"
-                                   "	background-color: rgb(52, 59, 72);\n"
-                                   "}\n"
-                                   "QSlider::groove:horizontal:hover {\n"
-                                   "	background-color: rgb(55, 62, 76);\n"
-                                   "}\n"
-                                   "QSlider::handle:horizontal {\n"
-                                   "    background-color: rgb(85, 170, 255);\n"
-                                   "    border: none;\n"
-                                   "    height: 18px;\n"
-                                   "    width: 18px;\n"
-                                   "    margin: 0px;\n"
-                                   "	border-radius: 9px;\n"
-                                   "}\n"
-                                   "QSlider::handle:horizontal:hover {\n"
-                                   "    background-color: rgb(105, 180, 255);\n"
-                                   "}\n"
-                                   "QSlider::handle:horizontal:pressed {\n"
-                                   "    background-color: rgb(65, 130, 195);\n"
-                                   "}\n"
-                                   "\n")
-        lblTextReduceNoise.setStyleSheet("color: #c1c1c1; font-weight: bold;margin-left: 10px")
-
-        self.setStyleSheet("background-color: #535353; ")
-
-    #################################################################################
-
-    #################################### setup layout #####################################
+        #################################### setup layout #####################################
 
         hboxImg = QHBoxLayout()
         hboxImg.addWidget(self.lblImgBefore)
@@ -407,7 +221,7 @@ class ImageProcessing(QWidget):
         vboxLeft.addLayout(hboxAi,1)
 
         vboxRight = QVBoxLayout()
-        vboxRight.addWidget(lblHistogram)
+        vboxRight.addWidget(self.lblHistogram)
         vboxRight.addWidget(lineHorizone)
         vboxRight.addLayout(hboxDaoAnh)
         vboxRight.addStretch(1)
@@ -425,21 +239,11 @@ class ImageProcessing(QWidget):
         hboxMain.addWidget(lineVertical)
         hboxMain.addLayout(vboxRight,2)
 
-    #################################################################################
+        #################################################################################
         self.setLayout(hboxMain)
         self.show()
 
     def daoAnh(self):
-        return 0
-
-    def garma(self, value):
-        return 0
-        #self.lblTextGarma.setText(str(value))
-
-    def smoothing(self, value):
-        return 0
-
-    def sharpen(self, value):
         return 0
 
     def reduceNoise(self, value):
@@ -460,21 +264,16 @@ class ImageProcessing(QWidget):
     def saveImage(self):
         return 0
 
-    def getImage(self):
-        fname = QFileDialog.getOpenFileName(self, 'Open file', 'c:\\', "Image files (*.jpg *.gif)")
-        imagePath = fname[0]
-        pixmapImgBefore = QPixmap(imagePath)
-        if (pixmapImgBefore.width() > self.lblImgBefore.width()):
-            pixmapImgBefore = pixmapImgBefore.scaledToWidth(self.lblImgBefore.width())
-        self.lblImgBefore.setPixmap(pixmapImgBefore)
-        self.lblImgAfter.setPixmap(pixmapImgBefore)
+    def set_image_processed(self, image):
+        pixmap_image = convert_cvImg_2_qImg(image, self.lblImgAfter.width(), self.lblImgAfter.height())
+        self.lblImgAfter.setPixmap(pixmap_image)
 
+    def set_image_root(self, image):
+        pixmap_image = convert_cvImg_2_qImg(image, self.lblImgBefore.width(), self.lblImgBefore.height())
+        self.lblImgBefore.setPixmap(pixmap_image)
 
-def main():
-    app = QApplication(sys.argv)
-    ex = ImageProcessing()
-    sys.exit(app.exec_())
-
-
-if __name__ == '__main__':
-    main()
+    def set_histogram_image(self, histogram_image):
+        histogram_pixmap = convert_cvImg_2_qImg(histogram_image, self.lblHistogram.width())
+        self.lblHistogram.setPixmap(histogram_pixmap)
+        
+        
