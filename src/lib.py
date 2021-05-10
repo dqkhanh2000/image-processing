@@ -1,3 +1,7 @@
+    """
+        Created by dqkhanh2000
+    """
+
 import PyQt5
 import math
 from PyQt5.QtGui import QPixmap

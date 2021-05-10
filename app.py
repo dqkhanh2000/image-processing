@@ -1,3 +1,6 @@
+    """
+        Created by dqkhanh2000
+    """
 import sys
 from PyQt5.QtWidgets import QApplication, QFileDialog
 import src.execute as execute

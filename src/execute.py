@@ -1,3 +1,7 @@
+    """
+        Created by dqkhanh2000
+    """
+
 import cv2
 from numpy import lib
 from src.handle_event import contrast, smoothing
