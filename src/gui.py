@@ -1,10 +1,9 @@
-
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from lib import *
-import handle_event
+from src.lib import *
+import src.handle_event as handle_event
 
 class ImageProcessing(QWidget):
 
@@ -15,7 +14,7 @@ class ImageProcessing(QWidget):
         self.height = self.screenRect.height() - 150
         self.width = self.screenRect.width() - 50
 
-        sshFile="style.qss"
+        sshFile="src/style.qss"
         with open(sshFile,"r") as fh:
             self.setStyleSheet(fh.read())
 
@@ -34,29 +33,16 @@ class ImageProcessing(QWidget):
         btnOpenImg = QPushButton(self)
         btnOpenImg.setToolTip("Open Image")
         btnOpenImg.clicked.connect(handle_event.open_image)
-        btnOpenImg.setIcon(QIcon("icon_OpenImg.png"))
+        btnOpenImg.setIcon(QIcon("src/img/icon_OpenImg.png"))
         btnOpenImg.setIconSize(QSize(25,25))
-
-        btnUndo = QPushButton(self)
-        btnUndo.setToolTip("Undo")
-        btnUndo.clicked.connect(self.undoEdit)
-        btnUndo.setIcon(QIcon("icon_Undo.png"))
-        btnUndo.setIconSize(QSize(25, 25))
-
-        btnRedo = QPushButton(self)
-        btnRedo.setToolTip("Redo")
-        btnRedo.clicked.connect(self.redoEdit)
-        btnRedo.setIcon(QIcon("icon_Redo.png"))
-        btnRedo.setIconSize(QSize(25, 25))
 
         btnSave = QPushButton(self)
         btnSave.setToolTip("Save Image")
         btnSave.setToolTip("Save Image")
-        btnSave.clicked.connect(self.saveImage)
-        btnSave.setIcon(QIcon("icon_SaveImg.png"))
+        btnSave.clicked.connect(handle_event.saveImage)
+        btnSave.setIcon(QIcon("src/img/icon_SaveImg.png"))
         btnSave.setIconSize(QSize(25, 25))
 
-        ################################ Img ##########################################
         # img before
         self.lblImgBefore = QLabel("Open image to start",self)
         self.lblImgBefore.setToolTip("Image Before")
@@ -66,7 +52,6 @@ class ImageProcessing(QWidget):
         #img after
         self.lblImgAfter = QLabel("Open image to start", self)
         self.lblImgAfter.setToolTip("Image After")
-        # self.lblImgAfter.setGeometry(self.lblImgBefore.width(), 0, self.lblImgBefore.width(), self.height)
         self.lblImgAfter.resize(self.width / 3, self.height)
         self.lblImgAfter.setAlignment(QtCore.Qt.AlignCenter)
 
@@ -74,103 +59,80 @@ class ImageProcessing(QWidget):
         lineVertical = QLabel(self)
         lineHorizone = QLabel(self)
 
-
-
         #img histogram
         self.lblHistogram = QLabel(self)
         self.lblHistogram.resize(200,100)
         self.lblHistogram.setAlignment(QtCore.Qt.AlignCenter)
 
-        #đảo ảnh
-        lblDaoAnh =QLabel("Âm bản",self)
-        btnDaoAnh = QPushButton("OK", self)
-        btnDaoAnh.setObjectName("btnAutoFunction")
-        btnDaoAnh.clicked.connect(self.daoAnh)
+        self.ckbGray = QCheckBox("Ảnh xám")
+        self.ckbGray.stateChanged.connect(handle_event.gray)
         hboxDaoAnh = QHBoxLayout()
-        hboxDaoAnh.addWidget(lblDaoAnh,5)
-        hboxDaoAnh.addWidget(btnDaoAnh,5)
+        hboxDaoAnh.addWidget(self.ckbGray,5)
         hboxDaoAnh.addStretch(4)
-
-        ################################## AI ######################################
-
-        lblSubject = QLabel("", self)
-
-        btnDeleteBackground = QPushButton("Xóa Phông", self)
-        btnDeleteBackground.setObjectName("btnAutoFunction")
-        btnDeleteBackground.clicked.connect(self.deleteBackground)
-
-        btnAutoEdit = QPushButton("Auto")
-        btnAutoEdit.setObjectName("btnAutoFunction")
-        btnAutoEdit.clicked.connect(self.autoEdit)
 
         ################################ Slider #####################################
 
-        #slider tăng chỉnh garma #####################
-        vboxGarma = QVBoxLayout()
+        #slider tăng chỉnh Gamma #####################
+        vboxGamma = QVBoxLayout()
+        hboxGamma = QHBoxLayout()
 
-        sldGarma = QSlider(Qt.Horizontal, self)
-        sldGarma.setRange(0, 100)
-        sldGarma.setFocusPolicy(Qt.NoFocus)
-        sldGarma.setValue(50)
-        sldGarma.valueChanged.connect(handle_event.contrast)
+        self.sldGamma = QSlider(Qt.Horizontal, self)
+        self.sldGamma.setRange(0, 100)
+        self.sldGamma.setFocusPolicy(Qt.NoFocus)
+        self.sldGamma.setValue(50)
+        self.sldGamma.valueChanged.connect(handle_event.contrast)
+        self.sldGamma.sliderReleased.connect(handle_event.release)
 
-        lblTextGarma = QLabel('Tăng chỉnh độ sáng', self)
-        lblTextGarma.setObjectName("lblSliderName")
+        self.lblTextGamma = QLabel('Tăng chỉnh độ sáng', self)
+        self.lblTextGamma.setToolTip("DÙng hàm gamma")
+        self.lblTextGamma.setObjectName("lblSliderName")
 
-        vboxGarma.addWidget(lblTextGarma)
-        vboxGarma.addWidget(sldGarma)
+        hboxGamma.addWidget(self.lblTextGamma)
+        vboxGamma.addLayout(hboxGamma)
+        vboxGamma.addWidget(self.sldGamma)
 
         # slider làm mịn ###############################
         vboxSmoothing = QVBoxLayout()
+        hboxSmoothing = QHBoxLayout()
 
-        sldSmoothing = QSlider(Qt.Horizontal, self)
-        sldSmoothing.setRange(0, 100)
+        self.sldSmoothing = QSlider(Qt.Horizontal, self)
+        self.sldSmoothing.setRange(0, 100)
 
-        sldSmoothing.setFocusPolicy(Qt.NoFocus)
-        sldSmoothing.setPageStep(5)
+        self.sldSmoothing.setFocusPolicy(Qt.NoFocus)
+        self.sldSmoothing.setPageStep(5)
 
-        sldSmoothing.valueChanged.connect(handle_event.smoothing)
+        self.sldSmoothing.valueChanged.connect(handle_event.smoothing)
+        self.sldSmoothing.sliderReleased.connect(handle_event.release)
 
         lblTextSmoothing = QLabel('Làm mịn', self)
         lblTextSmoothing.setObjectName("lblSliderName")
 
-        vboxSmoothing.addWidget(lblTextSmoothing)
-        vboxSmoothing.addWidget(sldSmoothing)
+        self.rbSmoothing1 = QRadioButton("Hàm lọc TB", self)
+        self.rbSmoothing1.setChecked(True)
+
+        rbSmoothing2 = QRadioButton("Hàm Gaussian", self)
+
+        hboxSmoothing.addWidget(lblTextSmoothing)
+        hboxSmoothing.addWidget(self.rbSmoothing1)
+        hboxSmoothing.addWidget(rbSmoothing2)
+        vboxSmoothing.addLayout(hboxSmoothing)
+        vboxSmoothing.addWidget(self.sldSmoothing)
 
         # slider làm sắc nét #########################
         vboxSharpen = QVBoxLayout()
+        hboxSharpen = QHBoxLayout()
 
-        sldSharpen = QSlider(Qt.Horizontal, self)
-        sldSharpen.setRange(0, 100)
-
-        sldSharpen.setFocusPolicy(Qt.NoFocus)
-        sldSharpen.setPageStep(5)
-
-        sldSharpen.valueChanged.connect(handle_event.sharpening)
-
-        lblTextSharpen = QLabel('Làm sắc nét', self)
-        lblTextSharpen.setObjectName("lblSliderName")
-
-        vboxSharpen.addWidget(lblTextSharpen)
-        vboxSharpen.addWidget(sldSharpen)
-
-        # slider Giảm nhiễu #########################
-        vboxReduceNoise = QVBoxLayout()
-
-        sldReduceNoise = QSlider(Qt.Horizontal, self)
-        sldReduceNoise.setRange(0, 100)
-
-        sldReduceNoise.setFocusPolicy(Qt.NoFocus)
-        sldReduceNoise.setPageStep(5)
-
-        sldReduceNoise.valueChanged.connect(self.reduceNoise)
-
-        lblTextReduceNoise = QLabel('Giảm nhiễu', self)
-        lblTextReduceNoise.setObjectName("lblSliderName")
-
-        vboxReduceNoise.addWidget(lblTextReduceNoise)
-        vboxReduceNoise.addWidget(sldReduceNoise)
-
+        self.ckbInvert = QCheckBox("Đảo ảnh")
+        self.ckbInvert.stateChanged.connect(handle_event.invert)
+        self.ckbSharpen = QCheckBox("Làm sắc nét")
+        self.ckbSharpen.stateChanged.connect(handle_event.sharpening)
+        self.ckbEdgeDetection = QCheckBox("Tách biên")
+        self.ckbEdgeDetection.stateChanged.connect(handle_event.edgeDetection)
+        
+        hboxSharpen.addWidget(self.ckbInvert)
+        hboxSharpen.addWidget(self.ckbSharpen)
+        hboxSharpen.addWidget(self.ckbEdgeDetection)
+        vboxSharpen.addLayout(hboxSharpen)
         ################################## set style ###########################################
         self.lblImgBefore.setStyleSheet("background-color: #282828;  ")
         self.lblImgAfter.setStyleSheet("background-color: #282828; ")
@@ -183,14 +145,6 @@ class ImageProcessing(QWidget):
 
         self.lblHistogram.setStyleSheet("background-color: #282828; ")
 
-        ########################### Ai ############################
-
-        lblSubject.setStyleSheet("color: #c1c1c1; font-weight: bold;margin-left: 10px")
-
-
-        ######## Đảo ảnh ################
-        lblDaoAnh.setStyleSheet("color: #c1c1c1; font-weight: bold; margin-left: 10px")
-
         #################################### setup layout #####################################
 
         hboxImg = QHBoxLayout()
@@ -202,16 +156,12 @@ class ImageProcessing(QWidget):
 
         hboxTopTool = QHBoxLayout()
         hboxTopTool.addWidget(btnOpenImg, 2)
-        hboxTopTool.addWidget(btnUndo, 2)
-        hboxTopTool.addWidget(btnRedo, 2)
         hboxTopTool.addWidget(btnSave, 2)
         hboxTopTool.addStretch(20)
+        # hboxTopTool.addWidget(cbb, 2)
         hboxTopTool.setContentsMargins(50, 10, 0, 10)
 
         hboxAi = QHBoxLayout()
-        hboxAi.addWidget(lblSubject,2)
-        hboxAi.addWidget(btnDeleteBackground,4)
-        hboxAi.addWidget(btnAutoEdit,4)
         hboxAi.addStretch(35)
         hboxAi.setContentsMargins(50, 0, 0, 10)
 
@@ -225,13 +175,12 @@ class ImageProcessing(QWidget):
         vboxRight.addWidget(lineHorizone)
         vboxRight.addLayout(hboxDaoAnh)
         vboxRight.addStretch(1)
-        vboxRight.addLayout(vboxGarma)
+        vboxRight.addLayout(vboxGamma)
         vboxRight.addStretch(1)
         vboxRight.addLayout(vboxSmoothing)
         vboxRight.addStretch(1)
         vboxRight.addLayout(vboxSharpen)
         vboxRight.addStretch(1)
-        vboxRight.addLayout(vboxReduceNoise)
         vboxRight.addStretch(6)
 
         hboxMain = QHBoxLayout()
@@ -242,27 +191,6 @@ class ImageProcessing(QWidget):
         #################################################################################
         self.setLayout(hboxMain)
         self.show()
-
-    def daoAnh(self):
-        return 0
-
-    def reduceNoise(self, value):
-        return 0
-
-    def deleteBackground(self):
-        return 0
-
-    def autoEdit(self):
-        return 0
-
-    def undoEdit(self):
-        return 0
-
-    def redoEdit(self):
-        return 0
-
-    def saveImage(self):
-        return 0
 
     def set_image_processed(self, image):
         pixmap_image = convert_cvImg_2_qImg(image, self.lblImgAfter.width(), self.lblImgAfter.height())
@@ -275,5 +203,6 @@ class ImageProcessing(QWidget):
     def set_histogram_image(self, histogram_image):
         histogram_pixmap = convert_cvImg_2_qImg(histogram_image, self.lblHistogram.width())
         self.lblHistogram.setPixmap(histogram_pixmap)
-        
-        
+
+    def show_value_slider(self, value):
+        self.lblTextGamma.setText(value)
