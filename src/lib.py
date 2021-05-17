@@ -1,6 +1,6 @@
-    """
-        Created by dqkhanh2000
-    """
+    # """
+    #     Created by dqkhanh2000
+    # """
 
 import PyQt5
 import math
@@ -28,17 +28,27 @@ def convert_cvImg_2_qImg(cvImg, c_width = 0, c_height = 0):
     return qPixmap
 
 def cal_histogram(img):
+
+    width = img.shape[1]
+    height = img.shape[0]
+    scale_down_ratio = 1
+    while height>400 or width >400:
+        scale_down_ratio += 1
+        width = int(width/scale_down_ratio)
+        height = int(height/scale_down_ratio)
+    
+    new_img = cv2.resize(img, (width, height))
     fig, ax = plt.subplots()
     histr = None
-    if len(img.shape) == 2:
-        histr = cv2.calcHist([img], [0], None, [256], [0, 256])
-        ax.plot(histr, color = 'g')
+    if len(new_img.shape) == 2:
+        histr = cv2.calcHist([new_img], [0], None, [256], [0, 256])
+        ax.plot(histr, color = 'b')
     else:
         color = ('b','g','r')
         for i,col in enumerate(color):
-            histr = cv2.calcHist([img],[i],None,[256],[0,256])
+            histr = cv2.calcHist([new_img],[i],None,[256],[0,256])
             ax.plot(histr, color = col)
-    plt.axis("off")
+    # plt.axis("off")
     return fig_to_np(fig)
 
 def fig_to_np(fig):

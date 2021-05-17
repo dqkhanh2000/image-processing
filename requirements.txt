@@ -1,3 +1,4 @@
 PyQt5
-pyopengl
+opencv-python
 matplotlib
+tensorflow==2.4.1

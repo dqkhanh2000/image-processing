@@ -1,6 +1,6 @@
-    """
-        Created by hnphuong
-    """
+    # """
+    #     Created by hnphuong
+    # """
 
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore
@@ -81,7 +81,7 @@ class ImageProcessing(QWidget):
         hboxGamma = QHBoxLayout()
 
         self.sldGamma = QSlider(Qt.Horizontal, self)
-        self.sldGamma.setRange(0, 100)
+        self.sldGamma.setRange(-150, 150)
         self.sldGamma.setFocusPolicy(Qt.NoFocus)
         self.sldGamma.setValue(50)
         self.sldGamma.valueChanged.connect(handle_event.contrast)

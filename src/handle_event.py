@@ -1,6 +1,6 @@
-    """
-        Created by dqkhanh2000
-    """
+    # """
+    #     Created by dqkhanh2000
+    # """
 from os.path import expanduser
 from PyQt5.QtWidgets import QFileDialog
 import src.execute as execute

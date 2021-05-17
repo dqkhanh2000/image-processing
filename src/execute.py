@@ -1,6 +1,6 @@
-    """
-        Created by dqkhanh2000
-    """
+    # """
+    #     Created by dqkhanh2000
+    # """
 
 import cv2
 from numpy import lib
@@ -8,6 +8,7 @@ from src.handle_event import contrast, smoothing
 from src.gui import ImageProcessing
 import numpy as np
 from src.lib import *
+from src.segment_image import get_bokeh_image, get_mask_from_image, get_object_from_image
 GRAY_MODE = True
 root_image_path = ''
 root_image = []
@@ -25,13 +26,29 @@ def get_gui():
 
 def cal_contrast(value):
     global contrast_image
-    g = 1
-    if value < 50:
-        g =(60-value)/10
-    else:
-        g = (100-(value-50)*2)/100
 
-    img = gamma(root_image, g, 1.5)
+    hsv = cv2.cvtColor(root_image, cv2.COLOR_BGR2HSV)
+    h, s, v = cv2.split(hsv)
+    if value >= 0:
+        lim = 255 - value
+        print(lim)
+        v[v > lim] = 255
+        v[v <= lim] += value
+    else:
+        value = int(-value)
+        lim = 0 + value
+        print(lim)
+        v[v < lim] = 0
+        v[v >= lim] -= value
+    final_hsv = cv2.merge((h, s, v))
+    img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+    # g = 1
+    # if value < 50:
+    #     g =(60-value)/10
+    # else:
+    #     g = (100-(value-50)*2)/100
+
+    # img = gamma(root_image, g, 1.5)
     new_image = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
     app_gui.set_image_processed(new_image)
     app_gui.set_histogram_image(cal_histogram(new_image))
@@ -51,15 +68,17 @@ def cal_smooth(value):
     if app_gui.rbSmoothing1.isChecked:
         img = cv2.filter2D(contrast_image, -1, mask)
     else:
-        img = cv2.GaussianBlur(img,(x,x),0)
-    new_image = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+        img = cv2.GaussianBlur(img,(x,x), 1.5)
+    new_image = np.absolute(img)
+    new_image = np.uint8(new_image)
     app_gui.set_image_processed(new_image)
     app_gui.set_histogram_image(cal_histogram(new_image))
     smoothing_image = new_image
 
 def invert_image():
     global contrast_image
-    img = np.subtract(255, contrast_image)
+    # img = np.subtract(255, contrast_image)
+    img = get_bokeh_image(contrast_image)
     new_image = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
     app_gui.set_image_processed(new_image)
     app_gui.set_histogram_image(cal_histogram(new_image))
@@ -94,10 +113,17 @@ def edge_detection(state):
     if state == 2:
         if len(smoothing_image.shape) == 3:
             app_gui.ckbGray.setChecked(True)
-        img = cv2.filter2D(smoothing_image, -1, mask)
+        # img = cv2.filter2D(smoothing_image, -1, mask)
+        img = cv2.Canny(smoothing_image, 30, 100)
     else:
         img = root_image
-    new_image = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+    
+    img = np.absolute(img)
+    img = np.uint8(img)
+    # img = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
+    #         cv2.THRESH_BINARY,11,2)
+    # ret,img = cv2.threshold(img, 15, 255,cv2.THRESH_BINARY)
+    new_image = np.uint8(img)
     app_gui.set_image_processed(new_image)
     app_gui.set_histogram_image(cal_histogram(new_image))
     contrast_image = new_image
