@@ -21,8 +21,12 @@ def convert_cvImg_2_qImg(cvImg, c_width = 0, c_height = 0):
         qImg = PyQt5.QtGui.QImage(cvImg.data, width, height, bytesPerLine, PyQt5.QtGui.QImage.Format_RGB888).rgbSwapped()
     
     qPixmap = QPixmap.fromImage(qImg)
-    if c_width < width:
-        qPixmap = qPixmap.scaledToWidth(c_width)
+    if c_width > c_height:
+        if c_width < width:
+            qPixmap = qPixmap.scaledToWidth(c_width)
+    else:
+        if c_height < height:
+            qPixmap = qPixmap.scaledToHeight(c_height)
     # if c_height < height:
     #     qPixmap = qPixmap.scaledToHeight(c_height)
     return qPixmap
@@ -78,6 +82,84 @@ def gaussian_mask(size, k, o):
             maxtrix[s+a].append(value)
     return (1/4.8976)*np.array(maxtrix)
 
-def gamma(img, gamma, c):
-    return float(c) * pow(img, float(gamma))
+def gamma(image, gamma, c):
+    # return gamma * img + c#float(c) * pow(img, float(gamma))
+    new_image = np.zeros(image.shape, image.dtype)
+    for y in range(image.shape[0]):
+        for x in range(image.shape[1]):
+            for c in range(image.shape[2]):
+                new_image[y,x,c] = np.clip(gamma*image[y,x,c] + c, 0, 255)
+    return new_image
+
+def process_image(image, is_gray = False,
+                    is_invert = False, brightness_value = 0,
+                    contrast_value = 0, hue_value = 0,
+                    saturation_value= 0, blur_value=0, blur_method = "average"):
+    if is_gray:
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    else:
+        if (brightness_value != 0 or contrast_value != 0 
+            or hue_value != 0 or saturation_value != 0):
+            hsv_image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+            h, s, v = cv2.split(hsv_image)
+
+            # change brightness
+            if brightness_value > 0:
+                brightness_lim = 255 - brightness_value
+                v[v > brightness_lim] = 255
+                v[v <= brightness_lim] += brightness_value
+            else:
+                brightness_value = int(-brightness_value)
+                brightness_lim = 0 + brightness_value
+                v[v < brightness_lim] = 0
+                v[v >= brightness_lim] -= brightness_value
+
+            # change hue
+            if hue_value > 0:
+                hue_lim = 255 - hue_value
+                h[h > hue_lim] = 255
+                h[h <= hue_lim] += hue_value
+            else:
+                hue_value = int(-hue_value)
+                hue_lim = 0 + hue_value
+                h[h < hue_lim] = 0
+                h[h >= hue_lim] -= hue_value
+
+            # change saturation
+            if saturation_value > 0:
+                saturation_lim = 255 - saturation_value
+                s[s > saturation_lim] = 255
+                s[s <= saturation_lim] += saturation_value
+            else:
+                saturation_value = int(-saturation_value)
+                saturation_lim = 0 + saturation_value
+                s[s < saturation_lim] = 0
+                s[s >= saturation_lim] -= saturation_value
+
+            final_hsv = cv2.merge((h, s, v))
+            image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2RGB)
+
+    if contrast_value != 0:
+        alpha = float(131 * (contrast_value + 127)) / (127 * (131 - contrast_value))
+        gamma = 127 * (1 - alpha)
+
+        image = cv2.addWeighted(image, alpha, image, 0, gamma)
+        image = cv2.normalize(image, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+
+    if blur_value != 0:
+        x = int(blur_value/5)
+        x*=2
+        if x%2 == 0:
+            x+=1
+        mask = avg_mask(x)
+        if blur_method == "average":
+            image = cv2.filter2D(image, -1, mask)
+        if blur_method == "gaussian":
+            image = cv2.GaussianBlur(image,(x,x), 1.5)
+        image = cv2.normalize(image, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+
+    if is_invert:
+        image = 255 - image
+
+    return image
 

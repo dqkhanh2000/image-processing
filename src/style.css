@@ -14,16 +14,12 @@ QPushButton{
     max-width: 40px;
 }
 
-QPushButton#btnAutoFunction{
-    border-radius: 10;
-    border : 1px solid #c1c1c1;
-    background-color: #535353;
-    color: #c1c1c1;
-    font-weight: bold;
-    min-height: 40px;
-    max-height: 40px;
-    min-width: 80px;
-    max-width: 80px;
+QPushButton:hover{
+    background-color: #10bef3;
+}
+
+QPushButton:pressed{
+    background-color: #1085f3;
 }
 
 QSlider::groove:horizontal {
@@ -44,7 +40,7 @@ QSlider::handle:horizontal {
     border-radius: 9px;
 }
 QSlider::handle:horizontal:hover {
-    background-color: rgb(105, 180, 255);
+    background-color: #69b4ff;
 }
 QSlider::handle:horizontal:pressed {
     color: rgb(65, 130, 195);
@@ -65,28 +61,6 @@ QComboBox{
 	color: white;
 
 }
-QComboBox:hover{
-
-}
-QComboBox::drop-down {
-	subcontrol-origin: padding;
-	subcontrol-position: top right;
-	width: 25px;
-	border-left-width: 1px;
-	border-left-color: #c1c1c1;
-	border-left-style: solid;
-	border-top-right-radius: 3px;
-	border-bottom-right-radius: 3px;
-	background-position: center;
-	background-image: url(./icon_dropdown.png);
-	background-repeat: no-reperat;
- }
-QComboBox QAbstractItemView {
-	color: rgb( 85, 170, 255);
-	background-color: #535353;
-	padding: 5px;
-	selection-background-color: rgb(39, 44, 54);
-}
 
 QRadioButton, QCheckBox{
     color: #c1c1c1;
@@ -99,10 +73,15 @@ QRadioButton::indicator {
 	border-radius: 10px;
     background: rgb(44, 49, 60);
 }
-QRadioButton::indicator:hover {
+QRadioButton::indicator:hover{
     border: 3px solid rgb(58, 66, 81);
 }
 QRadioButton::indicator:checked {
-    background: 3px solid rgb(94, 106, 130);
+    background: 3px solid #10bef3;
 	border: 3px solid rgb(52, 59, 72);
+}
+
+QCheckBox::indicator:hover{
+    border: 1px solid #10bef3;
+    background-color: #fff;
 }

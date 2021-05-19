@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 IMAGE_SIZE = (256, 256)
 MASK_PREDICT_SHAPE = (1, 256, 256, 3)
-model = keras.models.load_model("model.h5")
+# model = keras.models.load_model("model.h5")
 
 def get_mask_from_image(image, threshold_value = 0.5, same_size = True):
     copy_image = cv2.resize(image, IMAGE_SIZE)

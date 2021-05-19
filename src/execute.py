@@ -2,13 +2,13 @@
     #     Created by dqkhanh2000
     # """
 
-import cv2
-from numpy import lib
-from src.handle_event import contrast, smoothing
-from src.gui import ImageProcessing
-import numpy as np
-from src.lib import *
-from src.segment_image import get_bokeh_image, get_mask_from_image, get_object_from_image
+# import cv2
+# from numpy import lib
+# # from src.handle_event import contrast, smoothing
+# from src.gui import ImageProcessing
+# import numpy as np
+# from src.lib import *
+# from src.segment_image import get_bokeh_image, get_mask_from_image, get_object_from_image
 GRAY_MODE = True
 root_image_path = ''
 root_image = []
@@ -158,8 +158,8 @@ def load_image_from_file():
     app_gui.set_image_root(root_image)
     app_gui.set_image_processed(root_image)
     app_gui.set_histogram_image(cal_histogram(root_image))
-    app_gui.sldGamma.setValue(50)
-    app_gui.sldSmoothing.setValue(0)
+    # app_gui.sldGamma.setValue(50)
+    # app_gui.sldSmoothing.setValue(0)
 
 def save_image(fname):
     cv2.imwrite(fname, contrast_image)

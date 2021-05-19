@@ -3,17 +3,12 @@
     # """
 import sys
 from PyQt5.QtWidgets import QApplication, QFileDialog
-import src.execute as execute
 from os.path import expanduser
+from src.gui import ImageProcessing
 
 def main():
     app = QApplication(sys.argv)
-    gui = execute.get_gui()
-
-    fname = QFileDialog.getOpenFileName(None, 'Open file', expanduser("~"), "Image files (*.jpg *.png *.gif)")
-    if len(fname[0]) != 0:
-        execute.root_image_path = fname[0]
-        execute.load_image_from_file()
+    gui = ImageProcessing()
     sys.exit(app.exec_())
 
 
