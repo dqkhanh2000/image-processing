@@ -81,7 +81,40 @@ QRadioButton::indicator:checked {
 	border: 3px solid rgb(52, 59, 72);
 }
 
-QCheckBox::indicator:hover{
+/* QCheckBox::indicator:hover{
     border: 1px solid #10bef3;
     background-color: #fff;
+} */
+
+QComboBox{
+	background-color:#535353;
+	border-radius: 5px;
+	border: 1px solid #c1c1c1;
+	padding: 5px;
+	padding-left: 10px;
+	color: white;
+
+}
+
+QComboBox:hover{
+
+}
+QComboBox::drop-down {
+	subcontrol-origin: padding;
+	subcontrol-position: top right;
+	width: 25px;
+	border-left-width: 1px;
+	border-left-color: #c1c1c1;
+	border-left-style: solid;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+	background-position: center;
+	background-image: url(src/img/icon_dropdown.png);
+	background-repeat: no-reperat;
+ }
+QComboBox QAbstractItemView {
+	color: rgb( 85, 170, 255);
+	background-color: #535353;
+	padding: 5px;
+	selection-background-color: rgb(39, 44, 54);
 }
