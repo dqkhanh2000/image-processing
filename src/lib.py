@@ -9,6 +9,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 import io
 
+from numpy.core import machar
+
 
 def convert_cvImg_2_qImg(cvImg, c_width = 0, c_height = 0):
     height = cvImg.shape[0]
@@ -77,49 +79,38 @@ def process_image(image, filter_value):
             or filter_value["hue"] != 0 or filter_value["saturation"] != 0):
             hsv_image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
             h, s, v = cv2.split(hsv_image)
+            h = np.uint16(h)
+            s = np.uint16(s)
+            v = np.uint16(v)
 
             # change brightness
-            if filter_value["brightness"] > 0:
-                brightness_lim = 255 - filter_value["brightness"]
-                v[v > brightness_lim] = 255
-                v[v <= brightness_lim] += filter_value["brightness"]
-            else:
-                filter_value["brightness"] = int(-filter_value["brightness"])
-                brightness_lim = 0 + filter_value["brightness"]
-                v[v < brightness_lim] = 0
-                v[v >= brightness_lim] -= filter_value["brightness"]
-
+            if filter_value["brightness"] != 0:
+                v = v + filter_value["brightness"]
+                v = np.clip(v, 0, 255)
+                
             # change hue
-            if filter_value["hue"] > 0:
-                hue_lim = 255 - filter_value["hue"]
-                h[h > hue_lim] = 255
-                h[h <= hue_lim] += filter_value["hue"]
-            else:
-                hue_value = int(-filter_value["hue"])
-                hue_lim = 0 + hue_value
-                h[h < hue_lim] = 0
-                h[h >= hue_lim] -= hue_value
+            if filter_value["hue"] != 0:
+                h = h + filter_value["hue"]
+                h = np.clip(h, 0, 255)
 
             # change saturation
-            if filter_value["saturation"] > 0:
-                saturation_lim = 255 - filter_value["saturation"]
-                s[s > saturation_lim] = 255
-                s[s <= saturation_lim] += filter_value["saturation"]
-            else:
-                saturation_value = int(-filter_value["saturation"])
-                saturation_lim = 0 + saturation_value
-                s[s < saturation_lim] = 0
-                s[s >= saturation_lim] -= saturation_value
+            if filter_value["saturation"] != 0:
+                s = s + filter_value["saturation"]
+                s = np.clip(s, 0, 255)
 
+            h = np.uint8(h)
+            s = np.uint8(s)
+            v = np.uint8(v)
             final_hsv = cv2.merge((h, s, v))
             image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2RGB)
 
     if filter_value["contrast"] != 0:
-        alpha = float(131 * (filter_value["contrast"] + 127)) / (127 * (131 - filter_value["contrast"]))
-        gamma = 127 * (1 - alpha)
-
-        image = cv2.addWeighted(image, alpha, image, 0, gamma)
-        image = cv2.normalize(image, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+        contrast_value = filter_value["contrast"]
+        alpha = contrast_value/127 + 1
+        beta = - contrast_value
+        image = image * alpha + beta
+        image = np.clip(image, 0, 255)
+        image = np.uint8(image)
 
     if filter_value["blur"] != 0:
         x = int(filter_value["blur"]/5)

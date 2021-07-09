@@ -1,8 +1,0 @@
-IMAGE PROCESSING APPLICATION
-Using OpenCV and PyQt5
--Mở terminal tại folder "image-processing"
-- Chú ý, bắt buộc phải tại folder image-processing (folder gốc) folder chứa file requirements.txt và app.txt
-    + Cài đặt các thư viện cần thiết: pip install -r requirements.txt
-    + Chạy ứng dụng:
-        -  Chạy lệnh: python app.py
-- Hoặc có thể mở folder image-processing bằng ide ưa thích và bấm run

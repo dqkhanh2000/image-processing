@@ -62,6 +62,12 @@ class ImageProcessing(QWidget):
         btn_save.setIcon(QIcon("src/img/icon_save.png"))
         btn_save.setIconSize(QSize(25, 25))
 
+        self.btn_change_background = QPushButton(self)
+        self.btn_change_background.setToolTip("Change background")
+        self.btn_change_background.clicked.connect(handle_event.change_background)
+        self.btn_change_background.setIcon(QIcon("src/img/icon_background.png"))
+        self.btn_change_background.setIconSize(QSize(25, 25))
+
         # point_size ###############################
         self.sld_point_size = QSlider(Qt.Horizontal, self)
         self.sld_point_size.setRange(1, 20)
@@ -183,7 +189,7 @@ class ImageProcessing(QWidget):
 
         # contrast ###############################
         self.sld_contrast = QSlider(Qt.Horizontal, self)
-        self.sld_contrast.setRange(0, 127)
+        self.sld_contrast.setRange(-127, 127)
         self.sld_contrast.setValue(0)
         self.sld_contrast.valueChanged.connect(
             lambda: handle_event.change_filter("contrast", self.sld_contrast.value()))
@@ -264,9 +270,8 @@ class ImageProcessing(QWidget):
         # mask_threshsold ###############################
         self.sld_mask_threshsold = QSlider(Qt.Horizontal, self)
         self.sld_mask_threshsold.setRange(0, 100)
-        self.sld_mask_threshsold.setValue(10)
-        self.sld_mask_threshsold.valueChanged.connect(
-            lambda: handle_event.change_segment_value("mask_threshsold_value", self.sld_mask_threshsold.value()/100.0))
+        self.sld_mask_threshsold.setValue(50)
+        self.sld_mask_threshsold.valueChanged.connect(handle_event.mask_threshsold)
         self.sld_mask_threshsold.sliderReleased.connect(
             lambda: handle_event.release("mask_threshsold", self.sld_mask_threshsold.value()))
 
@@ -361,6 +366,7 @@ class ImageProcessing(QWidget):
         hboxTopTool.addWidget(btn_open)
         hboxTopTool.addWidget(btn_save)
         hboxTopTool.addWidget(btn_histogram)
+        hboxTopTool.addWidget(self.btn_change_background)
         hboxTopTool.addStretch(1)
         hboxTopTool.addWidget(self.lbl_point_size)
         hboxTopTool.addWidget(self.sld_point_size)
@@ -391,6 +397,7 @@ class ImageProcessing(QWidget):
         self.sld_point_size.hide()
         self.rb_sub_mask.hide()
         self.rb_add_mask.hide()
+        self.btn_change_background.hide()
 
         #################################################################################
         self.setLayout(hboxMain)
@@ -407,6 +414,7 @@ class ImageProcessing(QWidget):
             self.lbl_text_mask_threshsold.show()
             self.sld_bokeh_blur.show()
             self.lbl_text_bokeh_blur.show()
+            self.btn_change_background.show()
         else:
             self.rb_bokeh_option1.hide()
             self.rb_bokeh_option2.hide()
@@ -416,6 +424,7 @@ class ImageProcessing(QWidget):
             self.lbl_text_mask_threshsold.hide()
             self.sld_bokeh_blur.hide()
             self.lbl_text_bokeh_blur.hide()
+            self.btn_change_background.hide()
         handle_event.change_segment_value("option","bokeh")
 
     def toggle_histogram(self):

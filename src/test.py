@@ -1,40 +1,47 @@
-import sys
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
-from PyQt5.QtGui import *
+# importing required libraries
 from PyQt5.QtWidgets import *
+from PyQt5.QtMultimedia import *
+from PyQt5.QtMultimediaWidgets import *
+import os
+import sys
+import time
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+import sys
 
-class CanvasOnWidget(QWidget):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        layout = QVBoxLayout()
-        self.setLayout(layout)
-        self._fig = Figure()
-        self.canv = FigureCanvas(self._fig)
-        layout.addWidget(self.canv)
-
-        ax = self._fig.add_subplot(111)
-        ax.plot(range(10),range(10))
-        self._fig.canvas.mpl_connect('button_press_event', self._resize)
-
-    def _resize(self, event):
-        w,h = self._fig.get_size_inches()
-        dw = self.size().width()-w*self._fig.dpi
-        dh = self.size().height()-h*self._fig.dpi
-        if event.button == 1: # left click
-            h-=1
-        elif event.button == 3: # right click
-            h+=1
-        self._fig.set_size_inches(1, 10)
-
-        self._fig.canvas.draw()
-        # self.resize(w*100+dw,h*100+dh)
-
-        print (self.size())
-        print (self._fig.canvas.size())
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    main = CanvasOnWidget()
-    main.show()
-    sys.exit(app.exec_())
+        self.setWindowFlags(QtCore.Qt.Window | Qt.WindowStaysOnTopHint)
+        self.setGeometry(1300, 700, 160*2, 90*2)
+        self.available_cameras = QCameraInfo.availableCameras()
+        if not self.available_cameras:
+            sys.exit()
+        self.viewfinder = QCameraViewfinder()
+        self.viewfinder.show()
+        self.setCentralWidget(self.viewfinder)
+        self.select_camera(0)
+        self.setWindowTitle("Capture tự chế")
+        self.show()
+    def select_camera(self, i):
+        self.camera = QCamera(self.available_cameras[i])
+        self.camera.setViewfinder(self.viewfinder)
+        self.camera.setCaptureMode(QCamera.CaptureStillImage)
+        self.camera.error.connect(lambda: self.alert(self.camera.errorString()))
+        self.camera.start()
+        self.capture = QCameraImageCapture(self.camera)
+        self.capture.error.connect(lambda error_msg, error,msg: self.alert(msg))
+        self.capture.imageCaptured.connect(lambda d, 
+                                i: self.status.showMessage("Image captured : " 
+                                + str(self.save_seq)))
+        self.current_camera_name = self.available_cameras[i].description()
+        self.save_seq = 0
+    def alert(self, msg):
+        error = QErrorMessage(self)
+        error.showMessage(msg)
+if __name__ == "__main__" :
+    App = QApplication(sys.argv)
+    window = MainWindow()
+    sys.exit(App.exec())

@@ -12,6 +12,8 @@ app_gui = None
 orig_image = []
 current_image = []
 cropped_image = []
+background_image = None
+
 filter_value = {
     "contrast" : 0,
     "brightness" : 0,
@@ -36,7 +38,8 @@ crop_x_start = -1
 crop_y_start = -1
 
 def exec_image(image = []):
-    global current_image, cropped_image
+    global current_image, cropped_image, background_image
+    background_image = []
     if len(image) == 0:
         if len(cropped_image) == 0:
             image = orig_image
@@ -83,13 +86,9 @@ def gray(state):
     exec_image()
 
 def mask_threshsold(value):
-    pass
-
-def repaint_mask():
-    pass
-
-def threshsold(value):
-    pass
+    global orig_image, current_mask
+    current_mask = get_mask_from_image(orig_image, threshold_value=value/100.0)
+    exec_image()
 
 def edge_detection(state):
     if state == 2:
@@ -115,25 +114,24 @@ def combobox_edge_detection_change(i):
         filter_value["edge_detection_method"] = app_gui.cbb_edge_detection.currentText()
         exec_image()
 
-def undo():
-    pass
-
 def bokeh_process(image):
-    global current_mask
+    global current_mask, background_image
     try:
-        if len(current_mask) == 0:
-            current_mask = get_mask_from_image(image, threshold_value=segment_value["mask_threshsold_value"])
+        if current_mask is None or current_mask == []:
+            current_mask = get_mask_from_image(current_image, threshold_value=segment_value["mask_threshsold_value"])
         if segment_value["option"] == "bokeh":
             blur_sigma = segment_value["bokeh_blur_value"]/10.0
             if segment_value["bokeh_blur_value"] % 2 == 0:
                 segment_value["bokeh_blur_value"] +=1
             blur_shape = (segment_value["bokeh_blur_value"], segment_value["bokeh_blur_value"])
-            image = get_bokeh_image(image, blur_shape, blur_sigma, threshold_value=segment_value["mask_threshsold_value"], mask=current_mask)
+            image = get_bokeh_image(image, blur_shape, blur_sigma, threshold_value=segment_value["mask_threshsold_value"], mask=current_mask, background_image=background_image)
         elif segment_value["option"] == "object":
             image = get_object_from_image(image, mask=current_mask)
         else:
-            image = cv2.normalize(current_mask, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+            print(current_mask)
+            image = cv2.normalize(np.array(current_mask), None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
     except Exception as err:
+        
         print(f'error: {err}')
     
     return image
@@ -186,3 +184,11 @@ def draw_image(e):
                 color = (0, 0, 0)
             current_mask = cv2.circle(current_mask, (x_i,y_i), app_gui.sld_point_size.value(), color, -1)
             exec_image()
+
+def change_background():
+    global background_image
+    fname = QFileDialog.getOpenFileName(None, 'Open file', expanduser("~"), "Image files (*.jpg *.png *.gif)")
+    if len(fname[0]) == 0:
+        return    
+    background_image = cv2.imread(fname[0])
+    exec_image()
