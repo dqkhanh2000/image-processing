@@ -128,7 +128,6 @@ def bokeh_process(image):
         elif segment_value["option"] == "object":
             image = get_object_from_image(image, mask=current_mask)
         else:
-            print(current_mask)
             image = cv2.normalize(np.array(current_mask), None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
     except Exception as err:
         

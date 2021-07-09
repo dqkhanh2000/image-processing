@@ -12,7 +12,6 @@ def get_model():
     return model
 
 def get_mask_from_image(image, threshold_value = 0.5, same_size = False):
-    print(image.shape)
     copy_image = cv2.resize(image, IMAGE_SIZE)
     copy_image = np.reshape(copy_image, MASK_PREDICT_SHAPE)
     predict_mask = get_model().predict(copy_image)[0]
@@ -39,7 +38,7 @@ def get_bokeh_image(image, blur_shape = (21,21), blur_sigma = 1.5, threshold_val
         mask = np.reshape(mask, (height, width, 1))
     else:
         mask = np.reshape(mask, (height, width, 1))
-    if background_image is None:
+    if background_image is None or background_image == []:
         blur_image = cv2.GaussianBlur(image, blur_shape, blur_sigma)
     else:
         background_image = cv2.resize(background_image, (width, height))
