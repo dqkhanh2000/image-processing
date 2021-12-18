@@ -1,6 +1,4 @@
-    # """
-    #     Created by dqkhanh2000
-    # """
+
 import sys
 from PyQt5.QtWidgets import QApplication, QFileDialog
 from os.path import expanduser

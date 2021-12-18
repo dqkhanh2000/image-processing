@@ -1,7 +1,3 @@
-    # """
-    #     Created by dqkhanh2000
-    # """
-
 import PyQt5
 from PyQt5.QtGui import QPixmap
 import cv2

@@ -1,6 +1,3 @@
-    # """
-    #     Created by dqkhanh2000
-    # """
 from os.path import expanduser
 from PyQt5.QtWidgets import QFileDialog
 import cv2
@@ -51,7 +48,6 @@ def exec_image(image = []):
     if app_gui.bokeh_activated:
         current_image = bokeh_process(current_image)
     app_gui.set_image_processed(current_image)
-    app_gui.draw_histogram(current_image)
 
 def set_gui(gui):
     global app_gui
@@ -145,49 +141,5 @@ def save_image():
         return
     cv2.imwrite(fname[0], current_image)
 
-def crop_image(e):
-    global cropped_image
-    if app_gui.is_cropping:
-        x, y = get_position_cursor_on_label(app_gui.lbl_image_origin, orig_image, e)
-        if crop_x_start == -1 or crop_y_start == -1 or x == -1 or y == -1:
-            app_gui.set_image_root(orig_image)
-        else:
-            cropped_image = np.array(orig_image[crop_y_start:y, crop_x_start:x])
-            exec_image()
 
-def start_crop(e):
-    global crop_x_start, crop_y_start
-    if app_gui.is_cropping:
-        crop_x_start, crop_y_start = get_position_cursor_on_label(app_gui.lbl_image_origin, orig_image, e)
 
-def crop_move(e):
-    if app_gui.is_cropping:
-        x, y = get_position_cursor_on_label(app_gui.lbl_image_origin, orig_image, e)
-        if crop_x_start == -1 or crop_y_start == -1 or x == -1 or y == -1:
-            app_gui.set_image_root(orig_image)
-        else:
-            img = orig_image.copy()
-            image = cv2.rectangle(img, (crop_x_start, crop_y_start),(x, y),(0,255,0),3)
-            app_gui.set_image_root(image)
-
-def draw_image(e):
-    global current_mask
-    x_i, y_i = get_position_cursor_on_label(app_gui.lbl_image_process, current_image, e)
-    if x_i >=0 and y_i >= 0:
-        if app_gui.is_drawing:
-            image = cv2.circle(current_image, (x_i,y_i), app_gui.sld_point_size.value(), (0,0,255), -1)
-            exec_image(image)
-        elif app_gui.is_editting_mask:
-            color = (255, 255, 255)
-            if app_gui.rb_sub_mask.isChecked():
-                color = (0, 0, 0)
-            current_mask = cv2.circle(current_mask, (x_i,y_i), app_gui.sld_point_size.value(), color, -1)
-            exec_image()
-
-def change_background():
-    global background_image
-    fname = QFileDialog.getOpenFileName(None, 'Open file', expanduser("~"), "Image files (*.jpg *.png *.gif)")
-    if len(fname[0]) == 0:
-        return    
-    background_image = cv2.imread(fname[0])
-    exec_image()
