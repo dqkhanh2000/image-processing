@@ -12,8 +12,8 @@ class ImageProcessing(QWidget):
         super().__init__()
         self.desktop = QApplication.desktop()
         self.screenRect = self.desktop.screenGeometry()
-        self.height = self.screenRect.height() - 100
-        self.width = self.screenRect.width() / 2
+        self.height = self.screenRect.height() / 2 + 100
+        self.width = self.screenRect.width() / 2 + 700
 
         sshFile="src/style.css"
         with open(sshFile,"r") as fh:
@@ -115,11 +115,8 @@ class ImageProcessing(QWidget):
         hboxImg = QHBoxLayout()
         hboxImg.addWidget(self.lbl_image_origin)
         hboxImg.addWidget(self.lbl_image_process)
-
-        hboxImg2 = QHBoxLayout()
-        hboxImg2.addWidget(self.lbl_bg_separation)
-        hboxImg2.addLayout(self.vbox_result)
-
+        hboxImg.addWidget(self.lbl_bg_separation)
+        hboxImg.addLayout(self.vbox_result)
 
         hboxTopTool = QHBoxLayout()
         hboxTopTool.addWidget(btn_open)
@@ -130,7 +127,6 @@ class ImageProcessing(QWidget):
         vboxLeft = QVBoxLayout()
         vboxLeft.addLayout(hboxTopTool,1)
         vboxLeft.addLayout(hboxImg,9)
-        vboxLeft.addLayout(hboxImg2, 9)
 
         hboxMain = QHBoxLayout()
         hboxMain.addLayout(vboxLeft,8)
