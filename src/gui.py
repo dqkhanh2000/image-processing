@@ -72,12 +72,10 @@ class ImageProcessing(QWidget):
         self.lbl_bg_separation.setAlignment(QtCore.Qt.AlignCenter)
 
 
-        self.vbox_result = QVBoxLayout()
-
         self.lbl_image_origin.setStyleSheet("background-color: #282828;  ")
         self.lbl_image_process.setStyleSheet("background-color: #282828; ")
         self.lbl_bg_separation.setStyleSheet("background-color: #282828; ")
-
+    
         hboxImg = QHBoxLayout()
         hboxImg.addWidget(self.lbl_image_origin)
         hboxImg.addWidget(self.lbl_image_process)
@@ -86,7 +84,8 @@ class ImageProcessing(QWidget):
         hboxTopTool = QHBoxLayout()
         hboxTopTool.addWidget(btn_open)
         hboxTopTool.addWidget(btn_save)
-        hboxTopTool.addWidget(self.txt_accuracy)
+       
+        hboxTopTool.addStretch(1)
         hboxTopTool.setContentsMargins(50, 10, 0, 10)
 
         vboxLeft = QVBoxLayout()
