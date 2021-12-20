@@ -74,28 +74,6 @@ class ImageProcessing(QWidget):
 
         self.vbox_result = QVBoxLayout()
 
-        # label tittle result
-        self.txt_result = QLabel("Result:")
-        self.txt_result.setStyleSheet("color: rgb(0, 0, 0); "
-                                    "font-size: 20px; "
-                                    "margin: 20px; "
-                                    "font-weight: bold; "
-                                   )
-        self.txt_result.setFixedHeight(70)
-        self.txt_result.setFixedWidth(200)                 
-        self.txt_result.setAlignment(Qt.AlignTop)
-        self.vbox_result.addWidget(self.txt_result)
-
-        # label tittle model
-        self.txt_model = QLabel("- Model:")
-        self.txt_model.setStyleSheet("color: rgb(0, 0, 0); "
-                                    "font-size: 16px; "
-                                    "margin-left: 30px; "
-                                    "font-weight: 400; "
-                                   )
-        self.txt_model.setAlignment(Qt.AlignTop)
-        self.vbox_result.addWidget(self.txt_model)
-
         #label title accuracy
         self.txt_accuracy = QLabel("- Accuracy:")
         self.txt_accuracy.setStyleSheet("color: rgb(0, 0, 0); "
@@ -106,22 +84,19 @@ class ImageProcessing(QWidget):
         self.txt_accuracy.setAlignment(Qt.AlignTop)
         self.vbox_result.addWidget(self.txt_accuracy)
 
-
         self.lbl_image_origin.setStyleSheet("background-color: #282828;  ")
         self.lbl_image_process.setStyleSheet("background-color: #282828; ")
         self.lbl_bg_separation.setStyleSheet("background-color: #282828; ")
-
 
         hboxImg = QHBoxLayout()
         hboxImg.addWidget(self.lbl_image_origin)
         hboxImg.addWidget(self.lbl_image_process)
         hboxImg.addWidget(self.lbl_bg_separation)
-        hboxImg.addLayout(self.vbox_result)
 
         hboxTopTool = QHBoxLayout()
         hboxTopTool.addWidget(btn_open)
         hboxTopTool.addWidget(btn_save)
-        hboxTopTool.addStretch(1)
+        hboxTopTool.addWidget(self.txt_accuracy)
         hboxTopTool.setContentsMargins(50, 10, 0, 10)
 
         vboxLeft = QVBoxLayout()
@@ -144,3 +119,7 @@ class ImageProcessing(QWidget):
     def set_image_root(self, image):
         pixmap_image = convert_cvImg_2_qImg(image, self.lbl_image_origin.width(), self.lbl_image_origin.height())
         self.lbl_image_origin.setPixmap(pixmap_image)
+
+    def set_image_bg_separation(self, image):
+        pixmap_image = convert_cvImg_2_qImg(image, self.lbl_bg_separation.width(), self.lbl_bg_separation.height())
+        self.lbl_bg_separation.setPixmap(pixmap_image)

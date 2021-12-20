@@ -60,6 +60,7 @@ def open_image():
         return    
     orig_image = cv2.imread(fname[0])
     app_gui.set_image_root(orig_image)
+    app_gui.set_image_bg_separation(orig_image)
     # orig_image = cv2.cvtColor(orig_image, cv2.COLOR_BGR2RGB)
     exec_image()
 
