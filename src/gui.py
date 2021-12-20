@@ -74,16 +74,6 @@ class ImageProcessing(QWidget):
 
         self.vbox_result = QVBoxLayout()
 
-        #label title accuracy
-        self.txt_accuracy = QLabel("- Accuracy:")
-        self.txt_accuracy.setStyleSheet("color: rgb(0, 0, 0); "
-                                    "font-size: 16px; "
-                                    "margin-left: 30px; "
-                                    "font-weight: 400; "
-                                   )
-        self.txt_accuracy.setAlignment(Qt.AlignTop)
-        self.vbox_result.addWidget(self.txt_accuracy)
-
         self.lbl_image_origin.setStyleSheet("background-color: #282828;  ")
         self.lbl_image_process.setStyleSheet("background-color: #282828; ")
         self.lbl_bg_separation.setStyleSheet("background-color: #282828; ")

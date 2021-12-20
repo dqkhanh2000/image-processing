@@ -23,6 +23,17 @@ def get_mask_from_image(image, threshold_value = 0.5, same_size = False):
         mask = cv2.resize(mask, (image.shape[1], image.shape[0]))
     return mask
 
+def get_mask_predict_from_image(image, threshold_value = 0.5, same_size = False):
+    copy_image = cv2.resize(image, IMAGE_SIZE)
+    copy_image = np.reshape(copy_image, MASK_PREDICT_SHAPE)
+    predict_mask = get_model().predict(copy_image)[0]
+    
+    mask = cv2.normalize(predict_mask, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+    mask = np.reshape(mask, (256, 256, 1))
+    if not same_size:
+        mask = cv2.resize(mask, (image.shape[1], image.shape[0]))
+    return mask
+
 def get_object_from_image(image, threshold_value = 0.5, mask = None):
     if len(mask) == 0:
         mask = get_mask_from_image(image, threshold_value)
